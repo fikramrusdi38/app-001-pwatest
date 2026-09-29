@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#1D4ED8" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <title>TEST-PWA</title>
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="icon" href="./icons/icon-192.png" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        background: #fff;
+        overflow: hidden;
+      }
+      #appFrame {
+        border: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        background: #fff;
+      }
+      #boot {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: #fff;
+        font-family: Arial, sans-serif;
+        color: #475569;
+        z-index: 5;
+      }
+      .boot-card {
+        text-align: center;
+      }
+      .spinner {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        margin: 0 auto 12px;
+        border: 3px solid #e2e8f0;
+        border-top-color: #1d4ed8;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="boot">
+      <div class="boot-card">
+        <div class="spinner"></div>
+        <div>Membuka aplikasi…</div>
+      </div>
+    </div>
+    <iframe
+      id="appFrame"
+      title="TEST-PWA"
+      allow="
+        camera *;
+        microphone *;
+        clipboard-read *;
+        clipboard-write *;
+        fullscreen *;
+      "
+      referrerpolicy="strict-origin-when-cross-origin"
+    ></iframe>
+    <script>
+      const APP_SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbwhQ-hRqfRAmcGsnCSY02rFhPzhj1zRFomQq-BWUgxVK9rrt_sOxeI4iSfS6mwVXm7wcg/exec?page=dashboard&sessionToken=9177ffe7973a4e5b8693fee689e4f933846883badf79410ca4dd09933d64e160&deviceId=a0ea20f1_94ac_4e6f_ad94_681815a941e3";
+      const frame = document.getElementById("appFrame");
+      const boot = document.getElementById("boot");
+      function openApp() {
+        const base = String(APP_SCRIPT_URL || "").trim();
+        if (!/^https:\/\/script\.google\.com\/macros\/s\//i.test(base)) {
+          boot.innerHTML =
+            '<div class="boot-card"><b>URL Web App belum diatur.</b><br><small>Edit APP_SCRIPT_URL pada index.html wrapper.</small></div>';
+          return;
+        }
+        frame.src = base;
+      }
+      frame.addEventListener("load", () =>
+        setTimeout(() => {
+          boot.style.display = "none";
+        }, 120),
+      );
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () =>
+          navigator.serviceWorker
+            .register("./service-worker.js")
+            .catch(() => {}),
+        );
+      }
+      openApp();
+    </script>
+  </body>
+</html>
